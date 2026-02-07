@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bakul UMKM Kelurahan Kahuripan</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+
+<body class="relative min-h-screen">
+<!-- ================= NAVBAR ================= -->
+<nav class="desktop-navbar hidden lg:block sticky top-0 z-50 bg-white shadow-sm">
+  <div class="max-w-7xl mx-auto px-6 py-4">
+
+    <div class="grid grid-cols-3 items-center">
+
+      <!-- LEFT: Logo -->
+      <div class="flex items-center gap-4">
+        <img src="{{ url_for('static', filename='image/logo.png') }}" class="w-12">
+        <div>
+          <h2
+            class="text-xl font-bold bg-gradient-to-r from-[#a67c52] to-[#6b5842] bg-clip-text text-transparent">
+            BAKUL KAHURIPAN
+          </h2>
+          <p class="text-sm opacity-70">Panduan UMKM</p>
+        </div>
+      </div>
+
+      <!-- CENTER: Menu -->
+      <ul class="flex justify-center gap-8 text-sm font-medium">
+        <li>
+          <li>
+          <a href="#" onclick="showSection('beranda')"
+            class="nav-item nav-active flex items-center gap-2 py-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+              stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Beranda
+          </a>
+        </li>
+            <a href="#" onclick="showSection('helpdesk')"
+            class="nav-item nav-active flex items-center gap-2 py-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+              stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Helpdesk
+          </a>
+        </li>
+      </ul>
+
+      <!-- RIGHT: Empty (biar center beneran di tengah) -->
+      <div></div>
+
+    </div>
+  </div>
+</nav>
+
+
+<!-- ================= MAIN ================= -->
+<main class="flex-1">
+<!-- ================= KBLI SECTION ================= -->
+<section class="kbli-section bg-[#f9f7f1] py-10 px-6" id="beranda-section">
+  <div class="max-w-7xl mx-auto">
+    
+    <!-- Judul & Deskripsi -->
+    <h2 class="text-2xl font-bold mb-4 text-center text-[#6b5842]">
+      KLASIFIKASI BAKU LAPANGAN USAHA INDONESIA (KBLI) 2020
+    </h2>
+    <p class="text-center text-gray-700 mb-8 max-w-3xl mx-auto">
+      Untuk mempermudah pelaku usaha menentukan kategori Bidang Usaha yang akan dikembangkan di Indonesia, pemerintah melalui Badan Pusat Statistik (BPS) menyusun Klasifikasi Baku Lapangan Usaha Indonesia (KBLI) sebagai panduan penentuan jenis kegiatan usaha/bisnis. Acuan ini diperbarui pada September 2020 sesuai dengan Peraturan BPS Nomor 2 Tahun 2020, sehingga total saat ini ada 1.790 kode KBLI.
+    </p>
+
+    <!-- Daftar Kategori KBLI -->
+<div class="grid grid-cols-1 gap-4 max-w-3xl mx-auto">
+  {% for cat in kbli_categories %}
+  <div class="kbli-category p-4 bg-white rounded-xl shadow hover:shadow-md transition flex gap-3 items-center">
+    <div class="bg-gray-300 rounded-md w-10 h-10 flex items-center justify-center font-semibold">
+      {{ cat.kode }}
+    </div>
+    <div class="text-sm text-gray-700 font-medium">
+      {{ cat.judul }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+
+
+
+</section>
+
+  <!-- ================= CHATBOT SECTION ================= -->
+  <section class="chatbot-wrapper"  id="helpdesk-section">
+    <div class="chatbot-window">
+
+      <!-- HEADER -->
+      <div class="chatbot-header">
+        <div class="flex items-center gap-3">
+          <img src="{{ url_for('static', filename='image/chatbot.png') }}" class="w-9">
+          <span class="font-semibold">Asisten BAKUL KAHURIPAN</span>
+        </div>
+      </div>
+
+      <!-- CHAT AREA (WAJIB ADA) -->
+      <div class="chatbot-chat" id="chatbotMessages">
+
+        <!-- WELCOME (BUKAN BUBBLE) -->
+        <div class="chat-message welcome">
+          <div class="welcome-text">
+            👋 <b>Selamat Datang di BAKUL KAHURIPAN</b><br>
+            <span class="text-sm opacity-80">
+              Silakan jelaskan usaha Anda atau pilih pertanyaan di bawah
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- QUICK QUESTIONS -->
+      <div class="quick-questions">
+        <button onclick="askQuestion('panduan-kbli')">📋 Panduan KBLI</button>
+        <button onclick="askQuestion('persyaratan-nib')">📄 Persyaratan NIB</button>
+        <button onclick="askQuestion('langkah-nib')">📝 Langkah NIB</button>
+        <button onclick="askQuestion('persyaratan-halal')">🥘 Sertifikat Halal</button>
+        <button onclick="askQuestion('bantuan-umkm')">💰 Bantuan UMKM</button>
+      </div>
+
+      <!-- INPUT -->
+      <div class="chatbot-input">
+        <input
+          type="text"
+          id="chatInput"
+          placeholder="Ketik pertanyaan Anda..."
+          onkeypress="handleEnter(event)">
+        <button onclick="handleUserMessage()">Kirim</button>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+
+  <!-- Footer -->
+ <!-- Footer -->
+<footer class="bg-[#9e835f] text-[#f3ede1]">
+  <div class="max-w-7xl mx-auto px-6 py-14">
+    
+    <!-- Top Footer -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+
+      <!-- Company Info -->
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <img src="{{ url_for('static', filename='image/logo.png') }}" class="w-10 h-10">
+          <span class="font-bold text-lg">BAKUL Kahuripan</span>
+        </div>
+
+        <p class="text-sm leading-relaxed opacity-90 max-w-sm">
+          Mendukung pertumbuhan usaha kecil dan menengah dengan produk berkualitas
+          dan pelayanan terbaik sejak 2025.
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h3 class="font-semibold text-lg mb-4">Link Cepat</h3>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white transition">Beranda</a></li>
+          <li><a href="#" class="hover:text-white transition">Helpdesk</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <h3 class="font-semibold text-lg mb-4">Kontak Kami</h3>
+
+        <ul class="space-y-3 text-sm">
+          <li class="flex gap-3">
+            <span>📍</span>
+            <span>Jl. Kahuripan No. 123, Tawang, Kota Tasikmalaya</span>
+          </li>
+          <li class="flex gap-3">
+            <span>📞</span>
+            <span>+62 22 1234 5678</span>
+          </li>
+          <li class="flex gap-3">
+            <span>✉️</span>
+            <span>info@umkmkahuripan.id</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="border-t border-[#b19b65] mt-10 pt-6 text-center">
+      <p class="text-sm opacity-90">
+        © 2026 BAKUL UMKM Kelurahan Kahuripan. Hak cipta dilindungi undang-undang.
+      </p>
+    </div>
+
+  </div>
+</footer>
+
+
+  </div>
+
+  <!-- Script -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="{{ url_for('static', filename='index.js') }}"></script>
+  <script src="{{ url_for('static', filename='chatbot.js') }}"></script>
+  
+<script>
+function showSection(section) {
+  if(section === 'beranda') {
+    document.getElementById('beranda-section').style.display = 'block';
+    document.getElementById('helpdesk-section').style.display = 'none';
+  } else {
+    document.getElementById('beranda-section').style.display = 'none';
+    document.getElementById('helpdesk-section').style.display = 'block';
+  }
+}
+</script>
+</body>
+
+</html>
